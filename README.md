@@ -1,4 +1,4 @@
-# CISCO-VIP-NETWORKING-2025
+# CISCO-VIP-NETWORKING-INTERNSHIP-2025
 # 🛰️ Auto Topology Generation & Network Simulation Tool
 
 **Cisco Virtual Internship Program 2025 – Networking Problem Statement**  
