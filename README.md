@@ -132,6 +132,7 @@ python main.py --validate-config
 
 **Day-1 Simulation:**
 python main.py --simulate --day 1
+
 <img width="614" height="248" alt="Screenshot 2025-08-15 192035" src="https://github.com/user-attachments/assets/3be98565-cf60-4121-b99c-9d2e08b31be0" />
 
 
