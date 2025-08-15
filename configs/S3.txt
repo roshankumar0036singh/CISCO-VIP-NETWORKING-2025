@@ -1,0 +1,75 @@
+hostname S3
+!
+version 12.2
+!
+vlan 10
+ name LAN_USERS
+!
+vlan 20
+ name MANAGEMENT
+!
+vlan 99
+ name NATIVE_VLAN
+!
+interface Vlan1
+ ip address 192.168.30.254 255.255.255.0
+ description Management Interface
+ no shutdown
+!
+interface Vlan10
+ ip address 192.168.30.253 255.255.255.0
+ description User VLAN Interface
+ no shutdown
+!
+interface GigabitEthernet0/1
+ description Connected to R3 Gi0/0
+ switchport mode trunk
+ switchport trunk native vlan 99
+ switchport trunk allowed vlan 1,10,20
+ spanning-tree portfast trunk
+ bandwidth 1000000
+ duplex full
+ speed 1000
+!
+interface GigabitEthernet0/2
+ description Connected to PC5
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ bandwidth 100000
+ duplex full
+ speed 100
+!
+interface GigabitEthernet0/3
+ description Connected to PC6
+ switchport mode access
+ switchport access vlan 10
+ spanning-tree portfast
+ bandwidth 100000
+ duplex full
+ speed 100
+!
+interface GigabitEthernet0/4
+ description Management Port
+ switchport mode access
+ switchport access vlan 20
+ spanning-tree portfast
+ bandwidth 100000
+ duplex full
+ speed 100
+!
+interface range GigabitEthernet0/5-24
+ description Unused Ports
+ switchport mode access
+ switchport access vlan 99
+ shutdown
+!
+spanning-tree mode rapid-pvst
+spanning-tree vlan 1,10,20 priority 32768
+!
+ip default-gateway 192.168.30.1
+!
+line vty 0 4
+ transport input ssh
+!
+end

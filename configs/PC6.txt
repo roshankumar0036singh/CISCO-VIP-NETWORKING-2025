@@ -1,0 +1,29 @@
+hostname PC6
+!
+version 15.1
+!
+interface FastEthernet0/0
+ ip address 192.168.30.11 255.255.255.0
+ description Connection to S3 via FastEthernet
+ bandwidth 100000
+ duplex full
+ speed 100
+ no shutdown
+!
+interface FastEthernet0/1
+ description Backup Interface
+ bandwidth 100000
+ duplex full
+ speed 100
+ shutdown
+!
+ip default-gateway 192.168.30.1
+!
+ip domain-name company.local
+ip name-server 8.8.8.8
+ip name-server 8.8.4.4
+!
+line vty 0 4
+ transport input ssh
+!
+end

@@ -1,0 +1,219 @@
+<html>
+    <head>
+        <meta charset="utf-8">
+        
+            <script src="lib/bindings/utils.js"></script>
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" integrity="sha512-WgxfT5LWjfszlPHXRmBWHkV2eceiWTOBvrKCNbdgDYTHrT2AeLCGbF4sZlZw3UMN3WtL0tGUoIAKsu8mllg/XA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js" integrity="sha512-LnvoEWDFrqGHlHmDD2101OrLcbsfkrzoSpvtSQtxK3RMnRV0eOkhhBN2dXHKRrUU8p2DGRTk35n4O8nWSVe1mQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+            
+        
+<center>
+<h1></h1>
+</center>
+
+<!-- <link rel="stylesheet" href="../node_modules/vis/dist/vis.min.css" type="text/css" />
+<script type="text/javascript" src="../node_modules/vis/dist/vis.js"> </script>-->
+        <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6"
+          crossorigin="anonymous"
+        />
+        <script
+          src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js"
+          integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf"
+          crossorigin="anonymous"
+        ></script>
+
+
+        <center>
+          <h1></h1>
+        </center>
+        <style type="text/css">
+
+             #mynetwork {
+                 width: 100%;
+                 height: 900px;
+                 background-color: #ffffff;
+                 border: 1px solid lightgray;
+                 position: relative;
+                 float: left;
+             }
+
+             
+
+             
+
+             
+        </style>
+    </head>
+
+
+    <body>
+        <div class="card" style="width: 100%">
+            
+            
+            <div id="mynetwork" class="card-body"></div>
+        </div>
+
+        
+        
+
+        <script type="text/javascript">
+
+              // initialize global variables.
+              var edges;
+              var nodes;
+              var allNodes;
+              var allEdges;
+              var nodeColors;
+              var originalNodes;
+              var network;
+              var container;
+              var options, data;
+              var filter = {
+                  item : '',
+                  property : '',
+                  value : []
+              };
+
+              
+
+              
+
+              // This method is responsible for drawing the graph, returns the drawn network
+              function drawGraph() {
+                  var container = document.getElementById('mynetwork');
+
+                  
+
+                  // parsing and collecting nodes and edges from the python
+                  nodes = new vis.DataSet([{"color": "#97c2fc", "font": {"color": "#000000"}, "id": "R1", "label": "router", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e R1\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Router\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 19000.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 4\u003cbr\u003eLoopback: 1.1.1.1/255.255.255.255 Status: up, BW: 8000.0 Mbps, Duplex: auto, Speed: auto, Desc: Loopback interface for OSPF router-id\u003cbr\u003eGigabitEthernet/0: 192.168.10.1/255.255.255.0 Status: up, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to Switch S1\u003cbr\u003eGigabitEthernet/1: 10.0.12.1/255.255.255.252 Status: up, BW: 10000.0 Mbps, Duplex: auto, Speed: auto, Desc: WAN Link to R2 - Primary Path\u003cbr\u003eSerial/0/0: 172.16.12.1/255.255.255.252 Status: down, BW: 1.5 Mbps, Duplex: auto, Speed: auto, Desc: Backup Link to R2 via Serial\u003cbr\u003eOSPF Config - Router ID: 1.1.1.1, Networks: 3, Ref BW: 100000, Max Paths: 1\u003cbr\u003e"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "R2", "label": "router", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e R2\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Router\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 29000.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 6\u003cbr\u003eLoopback: 2.2.2.2/255.255.255.255 Status: up, BW: 8000.0 Mbps, Duplex: auto, Speed: auto, Desc: Loopback interface for OSPF router-id\u003cbr\u003eGigabitEthernet/0: 192.168.20.1/255.255.255.0 Status: up, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to Switch S2\u003cbr\u003eGigabitEthernet/1: 10.0.12.2/255.255.255.252 Status: up, BW: 10000.0 Mbps, Duplex: auto, Speed: auto, Desc: WAN Link to R1 - Primary Path\u003cbr\u003eGigabitEthernet/2: 10.0.23.1/255.255.255.252 Status: up, BW: 10000.0 Mbps, Duplex: auto, Speed: auto, Desc: WAN Link to R3 - Primary Path\u003cbr\u003eSerial/0/0: 172.16.12.2/255.255.255.252 Status: down, BW: 1.5 Mbps, Duplex: auto, Speed: auto, Desc: Backup Link to R1 via Serial\u003cbr\u003eSerial/0/1: 172.16.23.1/255.255.255.252 Status: down, BW: 1.5 Mbps, Duplex: auto, Speed: auto, Desc: Backup Link to R3 via Serial\u003cbr\u003eOSPF Config - Router ID: 2.2.2.2, Networks: 5, Ref BW: 100000, Max Paths: 1\u003cbr\u003e"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "R3", "label": "router", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e R3\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Router\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 19000.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 5\u003cbr\u003eLoopback: 3.3.3.3/255.255.255.255 Status: up, BW: 8000.0 Mbps, Duplex: auto, Speed: auto, Desc: Loopback interface for OSPF router-id\u003cbr\u003eGigabitEthernet/0: 192.168.30.1/255.255.255.0 Status: up, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to Switch S3\u003cbr\u003eGigabitEthernet/1: 10.0.23.2/255.255.255.252 Status: up, BW: 10000.0 Mbps, Duplex: auto, Speed: auto, Desc: WAN Link to R2 - Primary Path\u003cbr\u003eSerial/0/0: 172.16.23.2/255.255.255.252 Status: down, BW: 1.5 Mbps, Duplex: auto, Speed: auto, Desc: Backup Link to R2 via Serial\u003cbr\u003eSerial/1/0: 172.16.13.2/255.255.255.252 Status: down, BW: 1.5 Mbps, Duplex: auto, Speed: auto, Desc: Direct Backup Link to R1 via Serial\u003cbr\u003eOSPF Config - Router ID: 3.3.3.3, Networks: 4, Ref BW: 100000, Max Paths: 1\u003cbr\u003e"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "S1", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e S1\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 1320.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 7\u003cbr\u003eVLAN: 192.168.10.254/255.255.255.0 Status: up, BW: 10.0 Mbps, Duplex: auto, Speed: auto, Desc: Management Interface\u003cbr\u003eVLAN: 192.168.10.253/255.255.255.0 Status: up, BW: 10.0 Mbps, Duplex: auto, Speed: auto, Desc: User VLAN Interface\u003cbr\u003eGigabitEthernet/1: -/- Status: up, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to R1 Gi0/0\u003cbr\u003eGigabitEthernet/2: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to PC1\u003cbr\u003eGigabitEthernet/3: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to PC2\u003cbr\u003eGigabitEthernet/4: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Management Port\u003cbr\u003erange GigabitEthernet0/5-24: -/- Status: down, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Unused Ports\u003cbr\u003eVLANs: 10, 20, 99"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "S2", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e S2\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 1320.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 7\u003cbr\u003eVLAN: 192.168.20.254/255.255.255.0 Status: up, BW: 10.0 Mbps, Duplex: auto, Speed: auto, Desc: Management Interface\u003cbr\u003eVLAN: 192.168.20.253/255.255.255.0 Status: up, BW: 10.0 Mbps, Duplex: auto, Speed: auto, Desc: User VLAN Interface\u003cbr\u003eGigabitEthernet/1: -/- Status: up, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to R2 Gi0/0\u003cbr\u003eGigabitEthernet/2: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to PC3\u003cbr\u003eGigabitEthernet/3: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to PC4\u003cbr\u003eGigabitEthernet/4: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Management Port\u003cbr\u003erange GigabitEthernet0/5-24: -/- Status: down, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Unused Ports\u003cbr\u003eVLANs: 10, 20, 99"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "S3", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e S3\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 1320.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 7\u003cbr\u003eVLAN: 192.168.30.254/255.255.255.0 Status: up, BW: 10.0 Mbps, Duplex: auto, Speed: auto, Desc: Management Interface\u003cbr\u003eVLAN: 192.168.30.253/255.255.255.0 Status: up, BW: 10.0 Mbps, Duplex: auto, Speed: auto, Desc: User VLAN Interface\u003cbr\u003eGigabitEthernet/1: -/- Status: up, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to R3 Gi0/0\u003cbr\u003eGigabitEthernet/2: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to PC5\u003cbr\u003eGigabitEthernet/3: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connected to PC6\u003cbr\u003eGigabitEthernet/4: -/- Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Management Port\u003cbr\u003erange GigabitEthernet0/5-24: -/- Status: down, BW: 1000.0 Mbps, Duplex: auto, Speed: auto, Desc: Unused Ports\u003cbr\u003eVLANs: 10, 20, 99"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "PC1", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e PC1\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 100.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 2\u003cbr\u003eFastEthernet/0: 192.168.10.10/255.255.255.0 Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connection to S1 via FastEthernet\u003cbr\u003eFastEthernet/1: -/- Status: down, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Backup Interface"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "PC2", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e PC2\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 100.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 2\u003cbr\u003eFastEthernet/0: 192.168.10.11/255.255.255.0 Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connection to S1 via FastEthernet\u003cbr\u003eFastEthernet/1: -/- Status: down, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Backup Interface"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "PC3", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e PC3\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 100.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 2\u003cbr\u003eFastEthernet/0: 192.168.20.10/255.255.255.0 Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connection to S2 via FastEthernet\u003cbr\u003eFastEthernet/1: -/- Status: down, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Backup Interface"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "PC4", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e PC4\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 100.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 2\u003cbr\u003eFastEthernet/0: 192.168.20.11/255.255.255.0 Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connection to S2 via FastEthernet\u003cbr\u003eFastEthernet/1: -/- Status: down, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Backup Interface"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "PC5", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e PC5\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 100.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 2\u003cbr\u003eFastEthernet/0: 192.168.30.10/255.255.255.0 Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connection to S3 via FastEthernet\u003cbr\u003eFastEthernet/1: -/- Status: down, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Backup Interface"}, {"color": "#97c2fc", "font": {"color": "#000000"}, "id": "PC6", "label": "pc", "shape": "dot", "size": 18, "title": "\u003cb\u003eHostname:\u003c/b\u003e PC6\u003cbr\u003e\u003cb\u003eDevice Type:\u003c/b\u003e Pc\u003cbr\u003e\u003cb\u003eTotal Bandwidth:\u003c/b\u003e 100.0 Mbps\u003cbr\u003e\u003cb\u003eInterfaces:\u003c/b\u003e 2\u003cbr\u003eFastEthernet/0: 192.168.30.11/255.255.255.0 Status: up, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Connection to S3 via FastEthernet\u003cbr\u003eFastEthernet/1: -/- Status: down, BW: 100.0 Mbps, Duplex: auto, Speed: auto, Desc: Backup Interface"}]);
+                  edges = new vis.DataSet([{"color": "#808080", "dashes": false, "from": "R1", "title": "R1 \u2194 PC1", "to": "PC1", "width": 2}, {"color": "#808080", "dashes": false, "from": "R1", "title": "R1 \u2194 PC2", "to": "PC2", "width": 2}, {"color": "#808080", "dashes": false, "from": "R1", "title": "R1 \u2194 R3", "to": "R3", "width": 2}, {"color": "#808080", "dashes": false, "from": "R1", "title": "R1 \u2194 R2", "to": "R2", "width": 2}, {"color": "#808080", "dashes": false, "from": "R1", "title": "R1 \u2194 S1", "to": "S1", "width": 2}, {"color": "#8B0000", "dashes": false, "from": "R2", "title": "Subnet: 10.0.23.0/30 between GigabitEthernet/2 and GigabitEthernet/1 - Bandwidth: 10000.0 Mbps, Cost: 1 | Bandwidth: 10000Mbps | Utilization: 30.8% | Priority: critical", "to": "R3", "width": 6}, {"color": "#808080", "dashes": false, "from": "R2", "title": "R2 \u2194 S2", "to": "S2", "width": 2}, {"color": "#808080", "dashes": false, "from": "R2", "title": "R2 \u2194 PC3", "to": "PC3", "width": 2}, {"color": "#808080", "dashes": false, "from": "R2", "title": "R2 \u2194 PC4", "to": "PC4", "width": 2}, {"color": "#808080", "dashes": false, "from": "R3", "title": "R3 \u2194 S3", "to": "S3", "width": 2}, {"color": "#808080", "dashes": false, "from": "R3", "title": "R3 \u2194 PC5", "to": "PC5", "width": 2}, {"color": "#808080", "dashes": false, "from": "R3", "title": "R3 \u2194 PC6", "to": "PC6", "width": 2}, {"color": "#32CD32", "dashes": false, "from": "S1", "title": "Subnet: 192.168.10.0/24 between VLAN and VLAN - Bandwidth: 10.0 Mbps, Cost: 10 | Bandwidth: 10Mbps | Utilization: 38.2% | Priority: low", "to": "S1", "width": 2}, {"color": "#808080", "dashes": false, "from": "S1", "title": "S1 \u2194 PC1", "to": "PC1", "width": 2}, {"color": "#808080", "dashes": false, "from": "S1", "title": "S1 \u2194 PC2", "to": "PC2", "width": 2}, {"color": "#32CD32", "dashes": false, "from": "S2", "title": "Subnet: 192.168.20.0/24 between VLAN and VLAN - Bandwidth: 10.0 Mbps, Cost: 10 | Bandwidth: 10Mbps | Utilization: 20.1% | Priority: low", "to": "S2", "width": 2}, {"color": "#808080", "dashes": false, "from": "S2", "title": "S2 \u2194 PC3", "to": "PC3", "width": 2}, {"color": "#808080", "dashes": false, "from": "S2", "title": "S2 \u2194 PC4", "to": "PC4", "width": 2}, {"color": "#32CD32", "dashes": false, "from": "S3", "title": "Subnet: 192.168.30.0/24 between VLAN and VLAN - Bandwidth: 10.0 Mbps, Cost: 10 | Bandwidth: 10Mbps | Utilization: 30.1% | Priority: low", "to": "S3", "width": 2}, {"color": "#808080", "dashes": false, "from": "S3", "title": "S3 \u2194 PC5", "to": "PC5", "width": 2}, {"color": "#808080", "dashes": false, "from": "S3", "title": "S3 \u2194 PC6", "to": "PC6", "width": 2}, {"color": "#808080", "dashes": false, "from": "PC1", "title": "PC1 \u2194 PC2", "to": "PC2", "width": 2}, {"color": "#808080", "dashes": false, "from": "PC3", "title": "PC3 \u2194 PC4", "to": "PC4", "width": 2}, {"color": "#32CD32", "dashes": false, "from": "PC5", "title": "Subnet: 192.168.30.0/24 between FastEthernet/0 and FastEthernet/0 - Bandwidth: 100.0 Mbps, Cost: 1 | Bandwidth: 100Mbps | Utilization: 24.8% | Priority: low", "to": "PC6", "width": 3}]);
+
+                  nodeColors = {};
+                  allNodes = nodes.get({ returnType: "Object" });
+                  for (nodeId in allNodes) {
+                    nodeColors[nodeId] = allNodes[nodeId].color;
+                  }
+                  allEdges = edges.get({ returnType: "Object" });
+                  // adding nodes and edges to the graph
+                  data = {nodes: nodes, edges: edges};
+
+                  var options = {
+    "configure": {
+        "enabled": false
+    },
+    "edges": {
+        "color": {
+            "inherit": true
+        },
+        "smooth": {
+            "enabled": true,
+            "type": "dynamic"
+        }
+    },
+    "interaction": {
+        "dragNodes": true,
+        "hideEdgesOnDrag": false,
+        "hideNodesOnDrag": false
+    },
+    "physics": {
+        "enabled": true,
+        "stabilization": {
+            "enabled": true,
+            "fit": true,
+            "iterations": 1000,
+            "onlyDynamicEdges": false,
+            "updateInterval": 50
+        }
+    }
+};
+
+                  
+
+
+                  
+
+                  network = new vis.Network(container, data, options);
+
+                  
+
+                  
+
+                  
+
+
+                  
+
+                  return network;
+
+              }
+              drawGraph();
+        </script>
+    
+<!-- Floating Controls and Legend (appended after PyVis created `network`) -->
+<style>
+  .floating-panel {
+    position: fixed; bottom: 20px; left: 20px; z-index: 9999;
+    background: #f8f9fa; border: 1px solid #ddd; padding: 10px 12px;
+    border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,.12);
+    font-family: Arial, sans-serif; font-size: 13px;
+  }
+  .floating-panel h4 { margin: 0 0 6px 0; font-size: 14px; }
+  .floating-panel .row { margin-top: 6px; }
+  .floating-panel button { margin-right: 8px; }
+</style>
+<div class="floating-panel">
+  <h4>Controls</h4>
+  <div class="row">
+    <button id="fitBtn">Fit to Screen</button>
+    <button id="togglePhysicsBtn">Toggle Physics</button>
+  </div>
+  <div class="row" style="margin-top:8px;">
+    <strong>Link Types:</strong>
+    <span style="margin-left:6px;">— Subnet</span>
+    <span style="margin-left:6px; border-bottom:2px dashed #000;">— OSPF</span>
+    <span style="margin-left:6px; border-bottom:2px dashed #000;">— BGP</span>
+  </div>
+</div>
+
+<script>
+(function() {
+  function wireUp() {
+    try {
+      if (typeof network === "undefined") {
+        // PyVis hasn't created it yet; try again shortly
+        return setTimeout(wireUp, 50);
+      }
+      var physicsEnabled = true;
+
+      var fitBtn = document.getElementById("fitBtn");
+      if (fitBtn) {
+        fitBtn.addEventListener("click", function() {
+          try { network.fit(); } catch (e) { console.warn("fit() failed:", e); }
+        });
+      }
+
+      var toggleBtn = document.getElementById("togglePhysicsBtn");
+      if (toggleBtn) {
+        toggleBtn.addEventListener("click", function() {
+          physicsEnabled = !physicsEnabled;
+          try { network.setOptions({ physics: { enabled: physicsEnabled } }); }
+          catch (e) { console.warn("toggle physics failed:", e); }
+        });
+      }
+    } catch (e) {
+      console.warn("Control wiring error:", e);
+      setTimeout(wireUp, 100);
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", wireUp);
+  } else {
+    wireUp();
+  }
+})();
+</script>
+</body>
+</html>

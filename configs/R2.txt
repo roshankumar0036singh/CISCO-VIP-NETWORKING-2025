@@ -1,0 +1,80 @@
+hostname R2
+!
+version 15.2
+!
+interface Loopback0
+ ip address 2.2.2.2 255.255.255.255
+ description Loopback interface for OSPF router-id
+!
+interface GigabitEthernet0/0
+ ip address 192.168.20.1 255.255.255.0
+ description Connected to Switch S2
+ bandwidth 1000000
+ duplex full
+ speed 1000
+ no shutdown
+!
+interface GigabitEthernet0/1
+ ip address 10.0.12.2 255.255.255.252
+ description WAN Link to R1 - Primary Path
+ bandwidth 10000000
+ duplex full
+ speed 10000
+ ip ospf cost 1
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ no shutdown
+!
+interface GigabitEthernet0/2
+ ip address 10.0.23.1 255.255.255.252
+ description WAN Link to R3 - Primary Path
+ bandwidth 10000000
+ duplex full
+ speed 10000
+ ip ospf cost 1
+ ip ospf hello-interval 10
+ ip ospf dead-interval 40
+ no shutdown
+!
+interface Serial0/0/0
+ ip address 172.16.12.2 255.255.255.252
+ description Backup Link to R1 via Serial
+ bandwidth 1544
+ encapsulation ppp
+ ip ospf cost 100
+ shutdown
+!
+interface Serial0/0/1
+ ip address 172.16.23.1 255.255.255.252
+ description Backup Link to R3 via Serial
+ bandwidth 1544
+ encapsulation ppp
+ ip ospf cost 100
+ shutdown
+!
+router ospf 1
+ router-id 2.2.2.2
+ auto-cost reference-bandwidth 100000
+ passive-interface default
+ no passive-interface GigabitEthernet0/1
+ no passive-interface GigabitEthernet0/2
+ no passive-interface Serial0/0/0
+ no passive-interface Serial0/0/1
+ network 2.2.2.2 0.0.0.0 area 0
+ network 10.0.12.0 0.0.0.3 area 0
+ network 10.0.23.0 0.0.0.3 area 0
+ network 172.16.12.0 0.0.0.3 area 0
+ network 172.16.23.0 0.0.0.3 area 0
+ maximum-paths 2
+!
+ip access-list extended MANAGEMENT_ACL
+ permit tcp any host 192.168.20.1 eq ssh
+ permit icmp any any echo-reply
+ permit icmp any any unreachable
+ deny ip any any
+!
+line vty 0 4
+ access-class MANAGEMENT_ACL in
+ transport input ssh
+!
+end
